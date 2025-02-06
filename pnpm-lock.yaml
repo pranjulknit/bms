@@ -18,8 +18,20 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
+  apps/http-server:
+    devDependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/prisma
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+
   apps/web:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/prisma
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -54,6 +66,15 @@ importers:
       typescript:
         specifier: 5.7.3
         version: 5.7.3
+
+  apps/ws-server:
+    devDependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/prisma
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
 
   packages/eslint-config:
     devDependencies:
