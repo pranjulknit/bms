@@ -27,6 +27,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa pranj@34.0.13.210 << 'EOF'
             cd bms && git pull
+            npm install -g pnpm
             pnpm install
             pnpm run build
             pm2 restart fe-server
