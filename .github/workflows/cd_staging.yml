@@ -1,25 +1,35 @@
 name: deploy to staging
+
 on:
-    push:
-        branches:
-            - "main"
+  push:
+    branches:
+      - "main"
+
 jobs:
-   
-    redeploy_everything :
-        name: "Deploying everything to the staging cluster"
-        runs-on: ubuntu-latest
-        steps:
-            - name: "Checkout Repository"
-              uses: actions/checkout@v2
-            - name: "SSH Into server"
-              run: |
-                echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-                ssh -i ~/ssh_key pranj@34.0.13.210
-                cd bms && git pull
-                pnpm install 
-                pnpm run build
-                pm2 restart fe-server
-                pm2 restart http-server
-                pm2 restart ws-server
+  redeploy_everything:
+    name: "Deploying everything to the staging cluster"
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v2
 
+      - name: "Setup SSH"
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          # Ensure ssh known hosts verification is skipped (or add known hosts for security)
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -H 34.0.13.210 >> ~/.ssh/known_hosts
+
+      - name: "SSH Into server and deploy"
+        run: |
+          ssh -i ~/.ssh/id_rsa pranj@34.0.13.210 << 'EOF'
+            cd bms && git pull
+            pnpm install
+            pnpm run build
+            pm2 restart fe-server
+            pm2 restart http-server
+            pm2 restart ws-server
+          EOF
